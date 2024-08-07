@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Real-Time Analytics Dashboard</h1>
+    <canvas id="myChart" width="400" height="200"></canvas>
+    <script>
+        async function fetchMetrics() {
+            const response = await fetch('/metrics');
+            const data = await response.json();
+            return data;
+        }
+
+        function updateChart(chart, data) {
+            chart.data.datasets[0].data = Object.values(data);
+            chart.update();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Page Views', 'Clicks', 'Signups'],
+                    datasets: [{
+                        label: 'Events',
+                        data: [0, 0, 0],
+                        backgroundColor: ['red', 'blue', 'green']
+                    }]
+                }
+            });
+
+            setInterval(async () => {
+                const metrics = await fetchMetrics();
+                updateChart(chart, metrics);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
